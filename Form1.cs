@@ -26,17 +26,39 @@ namespace CRUD
             try
             {
                 conexion.Open();
+                string sql = "SHOW TABLES;";
+                int length = 0;
+                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                {
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            length += 1;
+                        }
+                    }
+                }
+                string[] array = new string[length];
+                int index = 0;
+                using (MySqlCommand comando = new MySqlCommand(sql, conexion))
+                {
+                    using (MySqlDataReader reader = comando.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            array[index] = reader.GetString(0);
+                            index++;
+                        }
+                    }
+                }
+                comboBox1.Items.AddRange(array);
                 MessageBox.Show("Conectado perfectamente");
-            }
-            catch
-            {
-                MessageBox.Show("Revisa lo que ingresaste en las casillas!", "Error!");
-            }
-            finally
-            {
-                conexion.Close();
                 panel1.Visible = false;
                 panel2.Visible = true;
+            }
+            catch(MySqlException ex)
+            {
+                MessageBox.Show("Error: " + ex);
             }
         }
 
@@ -75,6 +97,21 @@ namespace CRUD
             if (Convert.ToString(e.KeyData) == "Return")
             {
                 textBox4.Focus();
+            }
+        }
+
+        private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            using (MySqlCommand comando = new MySqlCommand("SELECT * FROM " + comboBox1.SelectedItem.ToString() + ";", conexion))
+            {
+                using (MySqlDataAdapter adaptador = new MySqlDataAdapter(comando))
+                {
+                    using (DataSet set = new DataSet())
+                    {
+                        adaptador.Fill(set);
+                        dataGridView1.DataSource = set.Tables[0];
+                    }
+                }
             }
         }
     }
