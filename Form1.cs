@@ -36,12 +36,14 @@ namespace CRUD
             {
                 conexion.Close();
                 panel1.Visible = false;
+                panel2.Visible = true;
             }
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
             panel1.Visible = true;
+            panel2.Visible = false;
         }
 
         private void textBox4_KeyDown(object sender, KeyEventArgs e)
